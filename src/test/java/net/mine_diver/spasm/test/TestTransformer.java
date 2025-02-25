@@ -1,6 +1,5 @@
 package net.mine_diver.spasm.test;
 
-import lombok.val;
 import net.mine_diver.spasm.api.transform.ClassTransformer;
 import net.mine_diver.spasm.api.transform.TransformationResult;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,7 @@ public class TestTransformer implements ClassTransformer {
 
     @Override
     public @NotNull TransformationResult transform(final @NotNull ClassLoader classLoader, final @NotNull ClassNode classNode) {
-        val insns = new InsnList();
+        var insns = new InsnList();
         insns.add(new FieldInsnNode(GETSTATIC, CLASS_SYSTEM_NAME, FIELD_SYSTEM_OUT_NAME, FIELD_SYSTEM_OUT_DESC));
         insns.add(new LdcInsnNode("Loading class: " + classNode.name));
         insns.add(new MethodInsnNode(INVOKEVIRTUAL, CLASS_PRINTSTREAM_NAME, METHOD_PRINTSTREAM_PRINTLN_NAME, METHOD_PRINTSTREAM_PRINTLN_DESC));
@@ -36,7 +35,7 @@ public class TestTransformer implements ClassTransformer {
                 .filter(methodNode -> METHOD_CLINIT_NAME.equals(methodNode.name))
                 .findAny()
                 .orElseGet(() -> {
-                    val clinit = new MethodNode(METHOD_CLINIT_ACCESS, METHOD_CLINIT_NAME, METHOD_CLINIT_DESC, null, null);
+                    var clinit = new MethodNode(METHOD_CLINIT_ACCESS, METHOD_CLINIT_NAME, METHOD_CLINIT_DESC, null, null);
                     clinit.instructions.add(new InsnNode(RETURN));
                     classNode.methods.add(clinit);
                     return clinit;

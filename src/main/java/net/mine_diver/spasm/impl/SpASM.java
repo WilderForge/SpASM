@@ -1,7 +1,6 @@
 package net.mine_diver.spasm.impl;
 
 import com.google.common.collect.ImmutableList;
-import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
 import net.mine_diver.spasm.api.transform.ClassTransformer;
 import net.mine_diver.spasm.api.transform.RawClassTransformer;
@@ -34,11 +33,11 @@ public class SpASM implements IMixinConfigPlugin {
     }
 
     private static <T extends TreeTransformer & IMixinTransformer> void hook() throws NoSuchFieldException, IllegalAccessException {
-        val knotClassLoader = SpASM.class.getClassLoader();
-        val knotClassDelegateField = knotClassLoader.getClass().getDeclaredField("delegate");
+        var knotClassLoader = SpASM.class.getClassLoader();
+        var knotClassDelegateField = knotClassLoader.getClass().getDeclaredField("delegate");
         knotClassDelegateField.setAccessible(true);
-        val knotClassDelegate = knotClassDelegateField.get(knotClassLoader);
-        val mixinTransformerField = knotClassDelegate.getClass().getDeclaredField("mixinTransformer");
+        var knotClassDelegate = knotClassDelegateField.get(knotClassLoader);
+        var mixinTransformerField = knotClassDelegate.getClass().getDeclaredField("mixinTransformer");
         mixinTransformerField.setAccessible(true);
         //noinspection unchecked
         mixinTransformerField.set(knotClassDelegate, new MixinTransformerHook<>((T) mixinTransformerField.get(knotClassDelegate)));

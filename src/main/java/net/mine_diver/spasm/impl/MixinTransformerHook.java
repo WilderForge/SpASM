@@ -1,8 +1,5 @@
 package net.mine_diver.spasm.impl;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import lombok.val;
 import net.mine_diver.spasm.api.transform.TransformationPhase;
 import net.mine_diver.spasm.api.transform.TransformationResult;
 import org.objectweb.asm.ClassReader;
@@ -19,12 +16,9 @@ import static net.mine_diver.spasm.api.transform.TransformationResult.PASS;
 import static net.mine_diver.spasm.impl.SpASM.RAW_TRANSFORMERS;
 import static net.mine_diver.spasm.impl.SpASM.TRANSFORMERS;
 
-@FieldDefaults(
-        level = AccessLevel.PRIVATE,
-        makeFinal = true
-)
+
 class MixinTransformerHook<T extends TreeTransformer & IMixinTransformer> extends MixinTransformerDelegate<T> {
-    ThreadLocal<Deque<String>> transformationStack = ThreadLocal.withInitial(ArrayDeque::new);
+    private final ThreadLocal<Deque<String>> transformationStack = ThreadLocal.withInitial(ArrayDeque::new);
 
     MixinTransformerHook(T delegate) {
         super(delegate);
@@ -32,10 +26,10 @@ class MixinTransformerHook<T extends TreeTransformer & IMixinTransformer> extend
 
     @Override
     public byte[] transformClassBytes(String name, String transformedName, byte[] basicClass) {
-        val stack = transformationStack.get();
+        var stack = transformationStack.get();
         if (basicClass == null || Objects.equals(stack.peek(), name)) return super.transformClassBytes(name, transformedName, basicClass);
         stack.push(name);
-        val classLoader = Thread.currentThread().getContextClassLoader();
+        var classLoader = Thread.currentThread().getContextClassLoader();
         basicClass = transform(name, basicClass, classLoader, TransformationPhase.BEFORE_MIXINS);
         basicClass = super.transformClassBytes(name, transformedName, basicClass);
         basicClass = transform(name, basicClass, classLoader, TransformationPhase.AFTER_MIXINS);
@@ -46,12 +40,12 @@ class MixinTransformerHook<T extends TreeTransformer & IMixinTransformer> extend
     private static byte[] transform(String name, byte[] basicClass, ClassLoader classLoader, TransformationPhase phase) {
         SpASM.currentPhase = phase;
         for (int i = 0; i < RAW_TRANSFORMERS.size(); i++) {
-            val transformer = RAW_TRANSFORMERS.get(i);
+            var transformer = RAW_TRANSFORMERS.get(i);
             if (!transformer.getPhases().contains(phase)) continue;
-            val transformationResult = transformer.transform(classLoader, name, basicClass);
+            var transformationResult = transformer.transform(classLoader, name, basicClass);
             if (transformationResult.isPresent()) basicClass = transformationResult.get();
         }
-        val classNode = new ClassNode();
+        var classNode = new ClassNode();
         new ClassReader(basicClass).accept(classNode, 0);
         if (TRANSFORMERS
                 .stream()
@@ -59,7 +53,7 @@ class MixinTransformerHook<T extends TreeTransformer & IMixinTransformer> extend
                 .map(classTransformer -> classTransformer.transform(classLoader, classNode))
                 .reduce(PASS, TransformationResult::choose)
                 == TransformationResult.SUCCESS) {
-            val classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            var classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
             classNode.accept(classWriter);
             basicClass = classWriter.toByteArray();
         }
