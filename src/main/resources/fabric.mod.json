@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "spasm",
-	"version": "${version}",
+	"version": "@modVersion@",
 	"name": "SpASM",
 	"description": "Allows for even worse things than FabricASM.",
 	"authors": [
