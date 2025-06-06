@@ -1,5 +1,5 @@
 [versions]
-workspace_version = "4.4.2.0"
+workspace_version = "5.2.1.0"
 jetbrains_annotation_version = "26.0.2"
 
 [libraries]
