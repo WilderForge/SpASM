@@ -1,6 +1,6 @@
 [versions]
 workspace_version = "4.4.2.0"
-jetbrains_annotation_version = "26.0.2"
+jetbrains_annotation_version = "26.0.2-1"
 
 [libraries]
 jetbrains_annotation = {module = "org.jetbrains:annotations", version.ref = "jetbrains_annotation_version" }
